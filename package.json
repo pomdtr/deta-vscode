@@ -1,6 +1,6 @@
 {
   "name": "deta",
-  "displayName": "Deta",
+  "displayName": "Deta Space",
   "description": "Deta Support for VS Code",
   "repository": {
     "type": "git",
@@ -23,15 +23,48 @@
     "commands": [
       {
         "command": "deta.space.open",
-        "title": "Open App in Builder",
-        "category": "Deta",
-        "enablement": "deta.enabled"
+        "title": "Open Project in Builder",
+        "category": "Deta Space",
+        "enablement": "deta.space.active"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Deta Space",
+        "properties": {
+          "deta.cli.path": {
+            "type": "string",
+            "description": "Path to the `space` CLI",
+            "scope": "window"
+          }
+        }
       }
     ],
     "yamlValidation": [
       {
         "fileMatch": "Spacefile",
         "url": "./schemas/spacefile.v0.schema.json"
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "space",
+        "required": [
+          "command"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "The space command to run"
+          },
+          "args": {
+            "type": "array",
+            "description": "Additional arguments to pass to the command",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     ],
     "languages": [
@@ -65,6 +98,7 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
     "@types/vscode": "^1.75.0",
+    "@types/which": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "@vscode/test-electron": "^2.2.2",
@@ -77,6 +111,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "which": "^3.0.0",
     "yaml": "^2.2.1"
   }
 }

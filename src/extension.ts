@@ -1,12 +1,15 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import * as os from "os";
 import { registerCompletions } from "./completion";
+import path = require("path");
+import { registerTaskProvider } from "./tasks";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  vscode.commands.executeCommand("setContext", "deta.active", true);
+  vscode.commands.executeCommand("setContext", "deta.space.active", true);
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -35,6 +38,38 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   registerCompletions(context);
+
+  const spacePath =
+    vscode.workspace.getConfiguration("deta.cli").get<string>("path") ||
+    path.join(os.homedir(), ".detaspace", "bin", "space");
+
+  if (!spacePath || !fileExists(vscode.Uri.file(spacePath))) {
+    vscode.window
+      .showInformationMessage(
+        "Please install the deta space cli to use this extension",
+        "Installation Guide",
+        "Configure Path"
+      )
+      .then((selection) => {
+        switch (selection) {
+          case "Installation Guide":
+            vscode.env.openExternal(
+              vscode.Uri.parse(
+                "https://deta.space/docs/en/basics/cli#installation"
+              )
+            );
+            return;
+          case "Configure Path":
+            vscode.commands.executeCommand(
+              "workbench.action.openSettings",
+              "deta.cli.path"
+            );
+            return;
+        }
+      });
+  } else {
+    registerTaskProvider(spacePath, context);
+  }
 }
 
 // This method is called when your extension is deactivated
